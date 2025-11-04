@@ -1,6 +1,8 @@
+// node-fetch v3 is ESM-only; use a small dynamic-import wrapper so CommonJS code can still call it.
+const fetch = (...args) => import('node-fetch').then(mod => mod.default(...args));
 const { init } = require('./db');
-const { nanoid } = require('nanoid');
 const { addNotification } = require('./notify');
+const { createPendingRequest, resolveRequest } = require('./storage');
 
 let dbsPromise = null;
 const getDbs = () => {
@@ -20,24 +22,15 @@ async function handleIncomingCall({ callerId, question }) {
 
   const match = findInKB(kbDB.data, question);
   if (match) {
+    console.log(`[AI] Found answer for "${question}" → ${match.answer}`);
     return {
       action: 'answer',
-      answer: match.answer
+      answer: match.answer,
     };
   }
 
-  const request = {
-    id: nanoid(),
-    callerId,
-    question,
-    status: 'pending',
-    createdAt: new Date().toISOString()
-  };
-
-  reqDB.data.requests.push(request);
-  await reqDB.write();
-
-  console.log(`[SUPERVISOR ALERT] Hey, I need help answering: "${question}" (requestId: ${request.id})`);
+  const request = await createPendingRequest({ callerId, question });
+  console.log(`[SUPERVISOR ALERT] Help needed for "${question}" (requestId: ${request.id})`);
 
   const webhookUrl = process.env.SUPERVISOR_WEBHOOK_URL;
   if (webhookUrl) {
@@ -50,43 +43,66 @@ async function handleIncomingCall({ callerId, question }) {
           requestId: request.id,
           question,
           callerId,
-          message: `Hey, I need help answering: "${question}"`
-        })
+          message: `Hey, I need help answering: "${question}"`,
+        }),
       });
-      console.log(`Webhook notification sent to ${webhookUrl}`);
+      console.log(`[Webhook → Supervisor] Notification sent successfully to ${webhookUrl}`);
     } catch (err) {
-      console.error(`Failed to send webhook: ${err.message}`);
+      console.error(`[Webhook Error] Could not send to supervisor: ${err.message}`);
     }
+  } else {
+    console.warn("SUPERVISOR_WEBHOOK_URL not configured, skipping webhook call.");
   }
 
   return {
     action: 'escalate',
     message: 'Let me check with my supervisor and get back to you.',
-    requestId: request.id
+    requestId: request.id,
   };
 }
 
 async function applySupervisorAnswer({ requestId, answerText, resolved = true }) {
-  const { kbDB, reqDB } = await getDbs();
+  const { kbDB } = await getDbs();
   await kbDB.read();
-  await reqDB.read();
 
-  const req = reqDB.data.requests.find(r => r.id === requestId);
-  if (!req) throw new Error('request not found');
-
-  req.status = resolved ? 'resolved' : 'unresolved';
-  req.resolvedAt = new Date().toISOString();
-  req.answer = answerText;
-
-  await reqDB.write();
+  const req = await resolveRequest({ requestId, answerText, resolved });
+  if (!req) throw new Error('Request not found when applying supervisor answer.');
 
   kbDB.data.answers.push({
     question: req.question,
     answer: answerText,
-    learnedAt: new Date().toISOString()
+    learnedAt: new Date().toISOString(),
   });
   await kbDB.write();
-  await addNotification(req.callerId, { type: 'answer', requestId, question: req.question, answer: answerText });
+  console.log(`[AI] Learned new answer for "${req.question}"`);
+
+  await addNotification(req.callerId, {
+    type: 'answer',
+    requestId,
+    question: req.question,
+    answer: answerText,
+  });
+
+  const callerWebhook = process.env.CALLER_WEBHOOK_URL;
+  if (callerWebhook) {
+    try {
+      await fetch(callerWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          callerId: req.callerId,
+          requestId,
+          question: req.question,
+          answer: answerText,
+        }),
+      });
+      console.log(`[Webhook → Caller] Sent learned answer for "${req.question}"`);
+    } catch (err) {
+      console.error(`[Webhook Error] Could not send to caller: ${err.message}`);
+    }
+  } else {
+    console.warn("CALLER_WEBHOOK_URL not configured, skipping webhook call.");
+  }
 
   return { success: true };
 }

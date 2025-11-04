@@ -47,6 +47,16 @@
       "question": "do you offer head massage?",
       "answer": "Yes we do",
       "learnedAt": "2025-11-04T06:18:34.036Z"
+    },
+    {
+      "question": "do you offer pedicure?",
+      "answer": "Yes we do at 500Rs",
+      "learnedAt": "2025-11-04T11:28:37.845Z"
+    },
+    {
+      "question": "automated-webhook-test 1762257851228",
+      "answer": "Automated test answer",
+      "learnedAt": "2025-11-04T12:04:16.386Z"
     }
   ]
 }

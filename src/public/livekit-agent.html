@@ -24,17 +24,18 @@
     async function join(){
       const identity = document.getElementById('identity').value;
       const roomName = document.getElementById('room').value;
+      const cfg = await fetch('/api/livekit-config').then(r=>r.json());
       const r = await fetch(`/api/token?identity=${encodeURIComponent(identity)}&room=${encodeURIComponent(roomName)}`);
       if(!r.ok){ document.getElementById('status').innerText = 'Token error'; return }
       const { token } = await r.json();
       room = new LivekitClient.Room();
-      room.on(LivekitClient.RoomEvent.TrackSubscribed, (track, pub, participant)=>{
+      room.on(LivekitClient.RoomEvent.TrackSubscribed, (track)=>{
         if(track.kind === 'video' || track.kind === 'audio'){
           const el = track.attach();
           document.getElementById('remotes').appendChild(el);
         }
       });
-      await room.connect('wss://your-livekit-host', token);
+      await room.connect(cfg.wsUrl, token);
       document.getElementById('status').innerText = 'Connected';
     }
     function leave(){ if(room){ room.disconnect(); document.getElementById('status').innerText='Disconnected'; } }

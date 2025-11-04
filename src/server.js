@@ -16,6 +16,13 @@ const kbRoute = require('./routes/kb');
 app.use('/api', kbRoute);
 const requestsRoute = require('./routes/requests');
 app.use('/api', requestsRoute);
+const webhookRoutes = require('./routes/webhooks');
+app.use('/webhooks', webhookRoutes);
+
+
+app.get('/api/livekit-config', (req, res) => {
+  res.json({ wsUrl: process.env.LIVEKIT_WS_URL || '' });
+});
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'test-call.html'));
@@ -30,6 +37,15 @@ process.on('uncaughtException', (err) => {
 process.on('unhandledRejection', (reason) => {
   console.error('Unhandled Rejection:', reason);
 });
+
+const { timeoutStalePending } = require('./services/storage');
+const { addNotification } = require('./services/notify');
+const timeoutMs = Number(process.env.REQ_TIMEOUT_MS || 600000);
+setInterval(async () => {
+  try {
+    const count = await timeoutStalePending({ timeoutMs });
+  } catch (e) {}
+}, Math.max(60000, Math.floor(timeoutMs / 2)));
 
 app.listen(config.port, () => {
   console.log(`Server running on http://localhost:${config.port}`);

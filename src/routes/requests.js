@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { listRequests, getRequestById, answerRequest } = require('../services/requests');
+const { listRequests, getRequestById } = require('../services/storage');
+const { applySupervisorAnswer } = require('../services/aiAgent');
 
 router.get('/requests', async (req, res) => {
   try {
@@ -30,7 +31,7 @@ router.post('/requests/:id/answer', async (req, res) => {
     const id = req.params.id;
     const { answerText, resolved } = req.body || {};
     if (!answerText) return res.status(400).json({ error: 'answerText required' });
-    const result = await answerRequest({ requestId: id, answerText, resolved: resolved !== false });
+    const result = await applySupervisorAnswer({ requestId: id, answerText, resolved: resolved !== false });
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: String(err) });

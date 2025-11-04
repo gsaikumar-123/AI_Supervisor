@@ -12,6 +12,8 @@ const tokenRoute = require('./routes/token');
 app.use('/api', tokenRoute);
 const notifyRoute = require('./routes/notify');
 app.use('/api', notifyRoute);
+const kbRoute = require('./routes/kb');
+app.use('/api', kbRoute);
 const requestsRoute = require('./routes/requests');
 app.use('/api', requestsRoute);
 

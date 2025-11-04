@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Learned Answers</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;margin:20px}
+    table{border-collapse:collapse;width:100%}
+    th,td{border:1px solid #ccc;padding:8px;text-align:left}
+    tr:nth-child(even){background:#f9f9f9}
+    .toolbar{margin-bottom:10px}
+  </style>
+</head>
+<body>
+  <h2>Learned Answers</h2>
+  <div class="toolbar">
+    <button id="refresh">Refresh</button>
+  </div>
+  <table>
+    <thead>
+      <tr><th>Question</th><th>Answer</th><th>Learned At</th></tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <script>
+    async function load(){
+      const r = await fetch('/api/kb/learned');
+      const j = await r.json();
+      const tbody = document.getElementById('tbody');
+      tbody.innerHTML = '';
+      (j.answers||[]).forEach(a=>{
+        const tr = document.createElement('tr');
+        const tdQ = document.createElement('td'); tdQ.textContent = a.question;
+        const tdA = document.createElement('td'); tdA.textContent = a.answer;
+        const tdT = document.createElement('td'); tdT.textContent = a.learnedAt ? new Date(a.learnedAt).toLocaleString() : '';
+        tr.appendChild(tdQ); tr.appendChild(tdA); tr.appendChild(tdT);
+        tbody.appendChild(tr);
+      });
+    }
+    document.getElementById('refresh').onclick = load;
+    load();
+  </script>
+</body>
+</html>

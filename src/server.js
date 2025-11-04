@@ -10,6 +10,8 @@ const callRoute = require('./routes/call');
 app.use('/api', callRoute);
 const tokenRoute = require('./routes/token');
 app.use('/api', tokenRoute);
+const notifyRoute = require('./routes/notify');
+app.use('/api', notifyRoute);
 const requestsRoute = require('./routes/requests');
 app.use('/api', requestsRoute);
 

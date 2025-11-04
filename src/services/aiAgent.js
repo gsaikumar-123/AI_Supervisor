@@ -1,5 +1,6 @@
 const { init } = require('./db');
 const { nanoid } = require('nanoid');
+const { addNotification } = require('./notify');
 
 let dbsPromise = null;
 const getDbs = () => {
@@ -85,9 +86,7 @@ async function applySupervisorAnswer({ requestId, answerText, resolved = true })
     learnedAt: new Date().toISOString()
   });
   await kbDB.write();
-
-  console.log(`[AI LEARNED] New answer added to KB: "${req.question}"`);
-  console.log(`[AI -> CALLER ${req.callerId}] ${answerText} (in response to ${requestId})`);
+  await addNotification(req.callerId, { type: 'answer', requestId, question: req.question, answer: answerText });
 
   return { success: true };
 }

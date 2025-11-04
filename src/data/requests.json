@@ -4,15 +4,28 @@
       "id": "nC22uNh_dO8sSNTAIw54C",
       "callerId": "caller_123",
       "question": "do you offer spa?",
-      "status": "pending",
-      "createdAt": "2025-11-04T02:42:17.225Z"
+      "status": "resolved",
+      "createdAt": "2025-11-04T02:42:17.225Z",
+      "resolvedAt": "2025-11-04T05:38:24.507Z",
+      "answer": "Yes"
     },
     {
       "id": "NCCRRPQG6yyac1NjX-u3m",
       "callerId": "caller_123",
       "question": "where are you?",
-      "status": "pending",
-      "createdAt": "2025-11-04T05:25:26.877Z"
+      "status": "resolved",
+      "createdAt": "2025-11-04T05:25:26.877Z",
+      "resolvedAt": "2025-11-04T05:38:14.020Z",
+      "answer": "We are located at Visakhapatnam"
+    },
+    {
+      "id": "dgWFyyQO81yRIKEZXvt7d",
+      "callerId": "caller_123",
+      "question": "cost of manicure?",
+      "status": "resolved",
+      "createdAt": "2025-11-04T06:02:57.039Z",
+      "resolvedAt": "2025-11-04T06:03:16.602Z",
+      "answer": "700 rupees"
     }
   ]
 }

@@ -27,6 +27,21 @@
     {
       "question": "what are your prices?",
       "answer": "Haircuts start at 150, manicures at 300, and facials at 250. Full pricing is available on our website."
+    },
+    {
+      "question": "where are you?",
+      "answer": "We are located at Visakhapatnam",
+      "learnedAt": "2025-11-04T05:38:14.030Z"
+    },
+    {
+      "question": "do you offer spa?",
+      "answer": "Yes",
+      "learnedAt": "2025-11-04T05:38:24.514Z"
+    },
+    {
+      "question": "cost of manicure?",
+      "answer": "700 rupees",
+      "learnedAt": "2025-11-04T06:03:16.608Z"
     }
   ]
 }

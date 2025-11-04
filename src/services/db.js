@@ -11,8 +11,21 @@ const init = async () => {
   const kbDB = new Low(kbAdapter, { answers: [] });
   const reqDB = new Low(reqAdapter, { requests: [] });
 
-  await kbDB.read();
-  await reqDB.read();
+  try {
+    await kbDB.read();
+  } catch (err) {
+    console.error('Failed to read KB JSON, reinitializing:', err && err.message ? err.message : err);
+    kbDB.data = { answers: [] };
+    try { await kbDB.write(); } catch (e) { /* ignore write errors here */ }
+  }
+
+  try {
+    await reqDB.read();
+  } catch (err) {
+    console.error('Failed to read requests JSON, reinitializing:', err && err.message ? err.message : err);
+    reqDB.data = { requests: [] };
+    try { await reqDB.write(); } catch (e) { /* ignore write errors here */ }
+  }
 
   kbDB.data = kbDB.data || { answers: [] };
   reqDB.data = reqDB.data || { requests: [] };

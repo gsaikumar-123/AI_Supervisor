@@ -7,14 +7,14 @@ const { apiKey: LIVEKIT_API_KEY, apiSecret: LIVEKIT_API_SECRET } = config.liveki
 
 router.get('/token', (req, res) => {
   const identity = req.query.identity || `user-${Math.floor(Math.random()*1000)}`;
-  const room = req.query.room || 'agent-room';
+  const room = req.query.room || 'aiAgent';
 
   if (!LIVEKIT_API_KEY || !LIVEKIT_API_SECRET) {
-    return res.status(500).json({ error: 'LiveKit keys not configured' });
+    return res.status(500).json({ error: 'LiveKit keys not configured in .env' });
   }
 
   const at = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, { identity });
-  const grant = new VideoGrant({ room });
+  const grant = new VideoGrant({ room, roomJoin: true, canPublish: true, canSubscribe: true });
   at.addGrant(grant);
   const token = at.toJwt();
 

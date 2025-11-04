@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>LiveKit Client</title>
+  <style>body{font-family:Arial,Helvetica,sans-serif;margin:20px}video,audio{max-width:100%;}</style>
+  <script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
+</head>
+<body>
+  <h2>LiveKit Client</h2>
+  <div>
+    <label>Identity <input id="identity" value="caller-1"></label>
+    <label style="margin-left:8px">Room <input id="room" value="aiAgent"></label>
+    <button id="join">Join</button>
+    <button id="leave">Leave</button>
+  </div>
+  <div id="status" style="margin-top:8px"></div>
+  <div style="margin-top:12px">
+    <div>Remote Tracks</div>
+    <div id="remotes"></div>
+  </div>
+  <script>
+    let room;
+    async function join(){
+      const identity = document.getElementById('identity').value;
+      const roomName = document.getElementById('room').value;
+      const r = await fetch(`/api/token?identity=${encodeURIComponent(identity)}&room=${encodeURIComponent(roomName)}`);
+      if(!r.ok){ document.getElementById('status').innerText = 'Token error'; return }
+      const { token } = await r.json();
+      room = new LivekitClient.Room();
+      room.on(LivekitClient.RoomEvent.TrackSubscribed, (track, pub, participant)=>{
+        if(track.kind === 'video' || track.kind === 'audio'){
+          const el = track.attach();
+          document.getElementById('remotes').appendChild(el);
+        }
+      });
+      await room.connect('wss://your-livekit-host', token);
+      document.getElementById('status').innerText = 'Connected';
+    }
+    function leave(){ if(room){ room.disconnect(); document.getElementById('status').innerText='Disconnected'; } }
+    document.getElementById('join').onclick = join;
+    document.getElementById('leave').onclick = leave;
+  </script>
+</body>
+</html>

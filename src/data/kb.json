@@ -2,11 +2,31 @@
   "answers": [
     {
       "question": "what are your opening hours?",
-      "answer": "We are open 9am - 7pm, Monday to Saturday."
+      "answer": "We are open 9am - 7pm, Monday to Saturday. Closed on Sundays."
     },
     {
       "question": "do you do haircuts?",
-      "answer": "Yes, we offer haircuts for men and women."
+      "answer": "Yes, we offer haircuts for men, women, and children."
+    },
+    {
+      "question": "what services do you offer?",
+      "answer": "We offer haircuts, hair coloring, manicures, pedicures, facials, waxing, and massage therapy."
+    },
+    {
+      "question": "how do i book an appointment?",
+      "answer": "You can book by calling us."
+    },
+    {
+      "question": "where are you located?",
+      "answer": "We are located at Visakhapatnam"
+    },
+    {
+      "question": "do you offer manicures?",
+      "answer": "Yes, we offer classic and gel manicures with a variety of polish colors."
+    },
+    {
+      "question": "what are your prices?",
+      "answer": "Haircuts start at 150, manicures at 300, and facials at 250. Full pricing is available on our website."
     }
   ]
 }

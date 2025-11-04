@@ -38,6 +38,26 @@ async function handleIncomingCall({ callerId, question }) {
 
   console.log(`[SUPERVISOR ALERT] Hey, I need help answering: "${question}" (requestId: ${request.id})`);
 
+  const webhookUrl = process.env.SUPERVISOR_WEBHOOK_URL;
+  if (webhookUrl) {
+    try {
+      await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          alert: 'new_request',
+          requestId: request.id,
+          question,
+          callerId,
+          message: `Hey, I need help answering: "${question}"`
+        })
+      });
+      console.log(`Webhook notification sent to ${webhookUrl}`);
+    } catch (err) {
+      console.error(`Failed to send webhook: ${err.message}`);
+    }
+  }
+
   return {
     action: 'escalate',
     message: 'Let me check with my supervisor and get back to you.',
@@ -66,7 +86,8 @@ async function applySupervisorAnswer({ requestId, answerText, resolved = true })
   });
   await kbDB.write();
 
-  console.log(`[AI → CALLER ${req.callerId}] ${answerText} (in response to ${requestId})`);
+  console.log(`[AI LEARNED] New answer added to KB: "${req.question}"`);
+  console.log(`[AI -> CALLER ${req.callerId}] ${answerText} (in response to ${requestId})`);
 
   return { success: true };
 }

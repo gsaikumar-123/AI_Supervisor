@@ -10,6 +10,8 @@ const callRoute = require('./routes/call');
 app.use('/api', callRoute);
 const tokenRoute = require('./routes/token');
 app.use('/api', tokenRoute);
+const requestsRoute = require('./routes/requests');
+app.use('/api', requestsRoute);
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'test-call.html'));
@@ -25,4 +27,8 @@ process.on('unhandledRejection', (reason) => {
   console.error('Unhandled Rejection:', reason);
 });
 
-app.listen(config.port, () => console.log(`Server running on http://localhost:${config.port}`));
+app.listen(config.port, () => {
+  console.log(`Server running on http://localhost:${config.port}`);
+  console.log(`Test Call: http://localhost:${config.port}/test-call.html`);
+  console.log(`Supervisor: http://localhost:${config.port}/supervisor.html`);
+});

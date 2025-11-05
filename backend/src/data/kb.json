@@ -57,6 +57,21 @@
       "question": "automated-webhook-test 1762257851228",
       "answer": "Automated test answer",
       "learnedAt": "2025-11-04T12:04:16.386Z"
+    },
+    {
+      "question": "do you offer oil massage?",
+      "answer": "Yes we do",
+      "learnedAt": "2025-11-05T07:25:51.542Z"
+    },
+    {
+      "question": "do you offer manicure?",
+      "answer": "Yes at 500rs",
+      "learnedAt": "2025-11-05T07:26:11.281Z"
+    },
+    {
+      "question": "automated-webhook-test 1762328167152",
+      "answer": "Automated test answer",
+      "learnedAt": "2025-11-05T07:36:11.463Z"
     }
   ]
 }
